@@ -1,11 +1,13 @@
 package com.capgemini.addressbook;
 
+import java.sql.Date;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,4 +122,11 @@ public class AddressBook_DBService {
 		return addressBookList;
 	}
 
+	public List<Address_Book_Data> getDetailsForDateRange(LocalDate startDate, LocalDate endDate) {
+		String sql = String.format("SELECT ab.firstName, ab.lastName, ab.address,ab.city, ab.state,"
+				+ "ab.zip,ab.phoneNumber,ab.email,ab.Type,abn.addressBookName from "
+				+ "address_book ab inner join address_book_name abn on ab.Type=abn.Type  WHERE date_added BETWEEN '%s' AND '%s';",
+				Date.valueOf(startDate), Date.valueOf(endDate));
+		return this.getContactDetailsUsingSqlQuery(sql);
+	}
 }

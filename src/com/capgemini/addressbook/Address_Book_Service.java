@@ -1,6 +1,7 @@
 package com.capgemini.addressbook;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 public class Address_Book_Service {
@@ -41,4 +42,8 @@ public class Address_Book_Service {
 		return addressBookList.get(0).equals(readData(name));
 	}
 
+	public List<Address_Book_Data> readContactDataForDateRange(LocalDate startDate, LocalDate endDate) {
+		this.addressBookList = addressBookDBService.getDetailsForDateRange(startDate, endDate);
+		return addressBookList;
+	}
 }

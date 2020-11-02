@@ -1,6 +1,7 @@
 package com.capgemini.addressbook;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
@@ -25,4 +26,14 @@ class Address_BookService_Test {
 		System.out.println(addressBookData);
 	}
 
+	@Test
+	public void givenDateRange_WhenRetrieved_ShouldMatchEmployeeCount() throws SQLException {
+		Address_Book_Service addressBookService = new Address_Book_Service();
+		addressBookService.readData();
+		LocalDate startDate = LocalDate.of(2018, 01, 01);
+		LocalDate endDate = LocalDate.now();
+		List<Address_Book_Data> addressBookData = addressBookService.readContactDataForDateRange(startDate, endDate);
+		Assert.assertEquals(2, addressBookData.size());
+		System.out.println(addressBookData);
+	}
 }
