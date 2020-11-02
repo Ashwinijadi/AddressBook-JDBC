@@ -48,8 +48,16 @@ public class Address_Book_Service {
 		this.addressBookList = addressBookDBService.getDetailsForDateRange(startDate, endDate);
 		return addressBookList;
 	}
-	public Map<String, Integer>getAddressByCityOrState() {
-		this.addressByCity=addressBookDBService.getAddressByCity();
+
+	public Map<String, Integer> getAddressByCityOrState() {
+		this.addressByCity = addressBookDBService.getAddressByCity();
 		return addressByCity;
+	}
+
+	public void addContactToAddressBook(String firstName, String lastName, String address, String city, String state,
+			LocalDate date_added, long zip, long phoneNumber, String email, String Type, String addressBookName) {
+		addressBookList.add(addressBookDBService.addContact(firstName, lastName, address, city, state, date_added, zip,
+				phoneNumber, email, Type, addressBookName));
+
 	}
 }

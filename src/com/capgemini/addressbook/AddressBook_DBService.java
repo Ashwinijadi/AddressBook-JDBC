@@ -131,6 +131,7 @@ public class AddressBook_DBService {
 				Date.valueOf(startDate), Date.valueOf(endDate));
 		return this.getContactDetailsUsingSqlQuery(sql);
 	}
+
 	public Map<String, Integer> getAddressByCity() {
 		String sql = "SELECT city, count(firstName) as count from address_book group by city; ";
 		Map<String, Integer> addreessByCityMap = new HashMap<>();
@@ -140,11 +141,54 @@ public class AddressBook_DBService {
 			while (result.next()) {
 				String city = result.getString("city");
 				Integer count = result.getInt("count");
-				addreessByCityMap.put(city,count);
+				addreessByCityMap.put(city, count);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return addreessByCityMap;
 	}
+
+	public Address_Book_Data addContact(String firstName, String lastName, String address, String city, String state,
+			LocalDate date_added, long zip, long phoneNumber, String email, String Type, String addressBookName) {
+		Connection connection = null;
+		try {
+			connection = this.getConnection();
+			connection.setAutoCommit(false);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			Statement statement = connection.createStatement();
+			String sql = String.format(
+					"insert into address_Book(firstName,lastName,address,date_added,city,state,zip,phoneNumber,email,Type) values ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+					firstName, lastName, address, date_added, city, state, zip, phoneNumber, email, Type);
+			statement.executeUpdate(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				e.printStackTrace();
+			}
+		}
+
+		try {
+			connection.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return new Address_Book_Data(firstName, lastName, address, city, state, zip, phoneNumber, email, Type,
+				addressBookName);
+	}
+
 }

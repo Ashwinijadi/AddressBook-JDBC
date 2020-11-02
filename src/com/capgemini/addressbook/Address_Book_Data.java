@@ -1,11 +1,14 @@
 package com.capgemini.addressbook;
 
+import java.time.LocalDate;
+
 public class Address_Book_Data {
 	String firstName;
 	String lastName;
 	String address;
 	String city;
 	String state;
+    LocalDate date_added;
 	long zip;
 	long phoneNumber;
 	String email;
@@ -27,6 +30,21 @@ public class Address_Book_Data {
 	public Address_Book_Data(String firstName, String lastName, String address, String city, String state, long zip,
 			long phoneNumber, String email, String type, String addressBookName) {
 		this(firstName, lastName, address, city, state, zip, phoneNumber, email);
+		this.type = type;
+		this.addressBookName = addressBookName;
+	}
+
+	public Address_Book_Data(String firstName, String lastName, String address, String city, String state,
+			LocalDate date_added, long zip, long phoneNumber, String email, String type, String addressBookName) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.address = address;
+		this.city = city;
+		this.state = state;
+		this.date_added = date_added;
+		this.zip = zip;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
 		this.type = type;
 		this.addressBookName = addressBookName;
 	}
