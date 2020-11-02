@@ -9,7 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AddressBook_DBService {
 
@@ -128,5 +130,21 @@ public class AddressBook_DBService {
 				+ "address_book ab inner join address_book_name abn on ab.Type=abn.Type  WHERE date_added BETWEEN '%s' AND '%s';",
 				Date.valueOf(startDate), Date.valueOf(endDate));
 		return this.getContactDetailsUsingSqlQuery(sql);
+	}
+	public Map<String, Integer> getAddressByCity() {
+		String sql = "SELECT city, count(firstName) as count from address_book group by city; ";
+		Map<String, Integer> addreessByCityMap = new HashMap<>();
+		try (Connection connection = addressBookDBService.getConnection()) {
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			while (result.next()) {
+				String city = result.getString("city");
+				Integer count = result.getInt("count");
+				addreessByCityMap.put(city,count);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return addreessByCityMap;
 	}
 }

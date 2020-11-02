@@ -3,11 +3,13 @@ package com.capgemini.addressbook;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public class Address_Book_Service {
 
 	private List<Address_Book_Data> addressBookList;
 	private AddressBook_DBService addressBookDBService;
+	private Map<String, Integer> addressByCity;
 
 	public Address_Book_Service(List<Address_Book_Data> addressBookList) {
 		this.addressBookList = addressBookList;
@@ -45,5 +47,9 @@ public class Address_Book_Service {
 	public List<Address_Book_Data> readContactDataForDateRange(LocalDate startDate, LocalDate endDate) {
 		this.addressBookList = addressBookDBService.getDetailsForDateRange(startDate, endDate);
 		return addressBookList;
+	}
+	public Map<String, Integer>getAddressByCityOrState() {
+		this.addressByCity=addressBookDBService.getAddressByCity();
+		return addressByCity;
 	}
 }
