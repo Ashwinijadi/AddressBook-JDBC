@@ -4,9 +4,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class Address_Book_Service {
-	public enum IOService {
-		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
-	}
 
 	private List<Address_Book_Data> addressBookList;
 	private AddressBook_DBService addressBookDBService;
@@ -19,17 +16,29 @@ public class Address_Book_Service {
 		addressBookDBService = addressBookDBService.getInstance();
 	}
 
-	public void writeData(IOService ioService) {
-		if (ioService.equals(IOService.CONSOLE_IO))
-			System.out.println("address to Console\n" + addressBookList);
+	public List<Address_Book_Data> readData() throws SQLException {
+		this.addressBookList = addressBookDBService.readData();
+
+		return addressBookList;
+
 	}
 
-	public List<Address_Book_Data> readData(IOService ioService) throws SQLException {
-		if (ioService.equals(IOService.FILE_IO))
-			return addressBookDBService.readData();
-		if (ioService.equals(IOService.DB_IO))
-			return addressBookDBService.readData();
-		else
-			return null;
+	public void update(String name, String address) {
+		int result = addressBookDBService.updateAddressBook(name, address);
+		if (result == 0)
+			return;
+		Address_Book_Data addressbookData = this.readData(name);
+		if (addressbookData != null)
+			addressbookData.address = address;
 	}
+
+	private Address_Book_Data readData(String name) {
+		return this.addressBookList.stream().filter(contact -> contact.firstName.equals(name)).findFirst().orElse(null);
+	}
+
+	public boolean checkContactInSyncWithDB(String name) {
+		List<Address_Book_Data> addressBookList = addressBookDBService.getAddressbookDataByName(name);
+		return addressBookList.get(0).equals(readData(name));
+	}
+
 }

@@ -2,6 +2,7 @@ package com.capgemini.addressbook;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -11,6 +12,7 @@ import java.util.List;
 public class AddressBook_DBService {
 
 	private static AddressBook_DBService addressBookDBService;
+	private PreparedStatement AddressBookContactStatement;
 
 	static AddressBook_DBService getInstance() {
 		if (addressBookDBService == null) {
@@ -22,14 +24,28 @@ public class AddressBook_DBService {
 	private AddressBook_DBService() {
 	}
 
-	public List<Address_Book_Data> readData() throws SQLException {
+	public List<Address_Book_Data> readData() {
 		String sql = "SELECT ab.firstName, ab.lastName, ab.address,ab.city, ab.state,"
 				+ "ab.zip,ab.phoneNumber,ab.email,ab.Type,abn.addressBookName from "
 				+ "address_book ab inner join address_book_name abn on ab.Type=abn.Type;";
-		List<Address_Book_Data> addressBookList = new ArrayList<Address_Book_Data>();
+		return this.getContactDetailsUsingSqlQuery(sql);
+	}
+
+	private List<Address_Book_Data> getContactDetailsUsingSqlQuery(String sql) {
+		List<Address_Book_Data> addressBookList = null;
 		try (Connection connection = this.getConnection();) {
-			Statement statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery(sql);
+			PreparedStatement preparedstatement = connection.prepareStatement(sql);
+			ResultSet resultSet = preparedstatement.executeQuery(sql);
+			addressBookList = this.readAddressBookData(resultSet);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return addressBookList;
+	}
+
+	public List<Address_Book_Data> readAddressBookData(ResultSet resultSet) throws SQLException {
+		List<Address_Book_Data> addressBookList = new ArrayList<>();
+		try {
 			while (resultSet.next()) {
 				String firstName = resultSet.getString("firstName");
 				String lastName = resultSet.getString("lastName");
@@ -57,4 +73,51 @@ public class AddressBook_DBService {
 		System.out.println("Connection successful: " + connection);
 		return connection;
 	}
+
+	public int updateAddressBook(String name, String address) {
+		return this.updateAddressBookUsingPreparedStatement(name, address);
+	}
+
+	private int updateAddressBookUsingPreparedStatement(String firstName, String address) {
+
+		try (Connection connection = this.getConnection();) {
+			String sql = "update address_book set address = ? Where firstName= ?";
+			PreparedStatement preparedstatement = connection.prepareStatement(sql);
+			preparedstatement.setString(1, address);
+			preparedstatement.setString(2, firstName);
+			int update = preparedstatement.executeUpdate();
+			return update;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	private void preparedStatementForContactData() {
+		try {
+			Connection connection = this.getConnection();
+			String sql = "SELECT ab.firstName, ab.lastName, ab.address,ab.city, ab.state,"
+					+ "ab.zip,ab.phoneNumber,ab.email,ab.Type,abn.addressBookName from "
+					+ "address_book ab inner join address_book_name abn on ab.Type=abn.Type  WHERE firstName=? ;";
+
+			AddressBookContactStatement = connection.prepareStatement(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public List<Address_Book_Data> getAddressbookDataByName(String name) {
+		List<Address_Book_Data> addressBookList = null;
+		if (this.AddressBookContactStatement == null)
+			this.preparedStatementForContactData();
+		try {
+			AddressBookContactStatement.setString(1, name);
+			ResultSet resultSet = AddressBookContactStatement.executeQuery();
+			addressBookList = this.readAddressBookData(resultSet);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return addressBookList;
+	}
+
 }

@@ -25,13 +25,14 @@ public class Address_Book_Data {
 	}
 
 	public Address_Book_Data(String firstName, String lastName, String address, String city, String state, long zip,
-			long phoneNumber, String email, String type,String addressBookName) {
+			long phoneNumber, String email, String type, String addressBookName) {
 		this(firstName, lastName, address, city, state, zip, phoneNumber, email);
 		this.type = type;
-		this.addressBookName=addressBookName;
+		this.addressBookName = addressBookName;
 	}
+
 	public Address_Book_Data() {
-		
+
 	}
 
 	@Override
@@ -41,5 +42,13 @@ public class Address_Book_Data {
 				+ email + ", type=" + type + ", addressBookName=" + addressBookName + "]";
 	}
 
-
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null || getClass() != obj.getClass())
+			return false;
+		Address_Book_Data that = (Address_Book_Data) obj;
+		return firstName.equals(that.firstName) && address.equals(that.address);
+	}
 }
