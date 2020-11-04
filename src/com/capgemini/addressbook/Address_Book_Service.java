@@ -2,8 +2,7 @@ package com.capgemini.addressbook;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Address_Book_Service {
 
@@ -39,6 +38,10 @@ public class Address_Book_Service {
 		return this.addressBookList.stream().filter(contact -> contact.firstName.equals(name)).findFirst().orElse(null);
 	}
 
+	public long countEntries() {
+		return addressBookList.size();
+	}
+
 	public boolean checkContactInSyncWithDB(String name) {
 		List<Address_Book_Data> addressBookList = addressBookDBService.getAddressbookDataByName(name);
 		return addressBookList.get(0).equals(readData(name));
@@ -54,10 +57,51 @@ public class Address_Book_Service {
 		return addressByCity;
 	}
 
-	public void addContactToAddressBook(String firstName, String lastName, String address, String city, String state,
-			LocalDate date_added, long zip, long phoneNumber, String email, String Type, String addressBookName) {
-		addressBookList.add(addressBookDBService.addContact(firstName, lastName, address, city, state, date_added, zip,
-				phoneNumber, email, Type, addressBookName));
+	public void addContactToAddressBook(String firstName, String lastName, String address, LocalDate date_added,
+			String city, String state, long zip, long phoneNumber, String email, String Type) {
+		addressBookList.add(addressBookDBService.addContact(firstName, lastName, address, date_added, city, state, zip,
+				phoneNumber, email, Type));
+
+	}
+
+	public void addContact(List<Address_Book_Data> addressList) {
+		addressList.forEach(address -> {
+			System.out.println("Employee being added : " + address.firstName);
+			this.addContactToAddress(address.firstName, address.lastName, address.address, address.date_added,
+					address.city, address.state, address.zip, address.phoneNumber, address.email,
+					address.addressBookName);
+			System.out.println("Employee added : " + address.firstName);
+		});
+		System.out.println("" + this.addressBookList);
+	}
+
+	public void addEmployeeToPayrollWithThreads(List<Address_Book_Data> addressList) {
+		Map<Integer, Boolean> employeeAdditionStatus = new HashMap<>();
+		addressList.forEach(address -> {
+			Runnable task = () -> {
+				employeeAdditionStatus.put(address.hashCode(), false);
+				System.out.println("Employee being added : " + Thread.currentThread().getName());
+				this.addContactToAddress(address.firstName, address.lastName, address.address, address.date_added,
+						address.city, address.state, address.zip, address.phoneNumber, address.email, address.Type);
+				employeeAdditionStatus.put(address.hashCode(), true);
+				System.out.println("Employee added : " + Thread.currentThread().getName());
+			};
+			Thread thread = new Thread(task, address.firstName);
+			thread.start();
+		});
+		while (employeeAdditionStatus.containsValue(false)) {
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			}
+		}
+		System.out.println("" + this.addressBookList);
+	}
+
+	private void addContactToAddress(String firstName, String lastName, String address, LocalDate date_added,
+			String city, String state, long zip, long phoneNumber, String email, String Type) {
+		addressBookList.add(addressBookDBService.addContact(firstName, lastName, address, date_added, city, state, zip,
+				phoneNumber, email, Type));
 
 	}
 }

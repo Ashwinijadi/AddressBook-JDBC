@@ -1,6 +1,7 @@
 package com.capgemini.addressbook;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Address_Book_Data {
 	String firstName;
@@ -8,11 +9,11 @@ public class Address_Book_Data {
 	String address;
 	String city;
 	String state;
-    LocalDate date_added;
+	LocalDate date_added;
 	long zip;
 	long phoneNumber;
 	String email;
-	String type;
+	String Type;
 	String addressBookName;
 
 	public Address_Book_Data(String firstName, String lastName, String address, String city, String state, long zip,
@@ -28,14 +29,14 @@ public class Address_Book_Data {
 	}
 
 	public Address_Book_Data(String firstName, String lastName, String address, String city, String state, long zip,
-			long phoneNumber, String email, String type, String addressBookName) {
+			long phoneNumber, String email, String Type, String addressBookName) {
 		this(firstName, lastName, address, city, state, zip, phoneNumber, email);
-		this.type = type;
+		this.Type = Type;
 		this.addressBookName = addressBookName;
 	}
 
-	public Address_Book_Data(String firstName, String lastName, String address, String city, String state,
-			LocalDate date_added, long zip, long phoneNumber, String email, String type, String addressBookName) {
+	public Address_Book_Data(String firstName, String lastName, String address, LocalDate date_added, String city,
+			String state, long zip, long phoneNumber, String email, String Type) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.address = address;
@@ -45,8 +46,7 @@ public class Address_Book_Data {
 		this.zip = zip;
 		this.phoneNumber = phoneNumber;
 		this.email = email;
-		this.type = type;
-		this.addressBookName = addressBookName;
+		this.Type = Type;
 	}
 
 	public Address_Book_Data() {
@@ -57,7 +57,13 @@ public class Address_Book_Data {
 	public String toString() {
 		return "Address_Book_Data [firstName=" + firstName + ", lastName=" + lastName + ", address=" + address
 				+ ", city=" + city + ", state=" + state + ", zip=" + zip + ", phoneNumber=" + phoneNumber + ", email="
-				+ email + ", type=" + type + ", addressBookName=" + addressBookName + "]";
+				+ email + ", type=" + Type + ", addressBookName=" + addressBookName + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(firstName, lastName, address, city, state, zip, phoneNumber, email, addressBookName,
+				date_added);
 	}
 
 	@Override

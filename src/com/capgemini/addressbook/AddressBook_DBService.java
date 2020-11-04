@@ -1,17 +1,9 @@
 package com.capgemini.addressbook;
 
 import java.sql.Date;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AddressBook_DBService {
 
@@ -83,7 +75,6 @@ public class AddressBook_DBService {
 	}
 
 	private int updateAddressBookUsingPreparedStatement(String firstName, String address) {
-
 		try (Connection connection = this.getConnection();) {
 			String sql = "update address_book set address = ? Where firstName= ?";
 			PreparedStatement preparedstatement = connection.prepareStatement(sql);
@@ -103,7 +94,6 @@ public class AddressBook_DBService {
 			String sql = "SELECT ab.firstName, ab.lastName, ab.address,ab.city, ab.state,"
 					+ "ab.zip,ab.phoneNumber,ab.email,ab.Type,abn.addressBookName from "
 					+ "address_book ab inner join address_book_name abn on ab.Type=abn.Type  WHERE firstName=? ;";
-
 			AddressBookContactStatement = connection.prepareStatement(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -149,8 +139,8 @@ public class AddressBook_DBService {
 		return addreessByCityMap;
 	}
 
-	public Address_Book_Data addContact(String firstName, String lastName, String address, String city, String state,
-			LocalDate date_added, long zip, long phoneNumber, String email, String Type, String addressBookName) {
+	public Address_Book_Data addContact(String firstName, String lastName, String address, LocalDate date_added,
+			String city, String state, long zip, long phoneNumber, String email, String type) {
 		Connection connection = null;
 		try {
 			connection = this.getConnection();
@@ -162,8 +152,8 @@ public class AddressBook_DBService {
 		try {
 			Statement statement = connection.createStatement();
 			String sql = String.format(
-					"insert into address_Book(firstName,lastName,address,date_added,city,state,zip,phoneNumber,email,Type) values ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
-					firstName, lastName, address, date_added, city, state, zip, phoneNumber, email, Type);
+					"insert into address_Book(firstName,lastName,address,date_added,city,state,zip,phoneNumber,email,type) values ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+					firstName, lastName, address, date_added, city, state, zip, phoneNumber, email, type);
 			statement.executeUpdate(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -187,8 +177,7 @@ public class AddressBook_DBService {
 				}
 			}
 		}
-		return new Address_Book_Data(firstName, lastName, address, city, state, zip, phoneNumber, email, Type,
-				addressBookName);
+		return new Address_Book_Data(firstName, lastName, address, date_added, city, state, zip, phoneNumber, email,
+				type);
 	}
-
 }
